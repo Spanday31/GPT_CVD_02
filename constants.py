@@ -1,0 +1,1 @@
+LDL_THERAPIES = {'Atorvastatin 20 mg': {'reduction': 40}}
