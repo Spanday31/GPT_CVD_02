@@ -1,29 +1,40 @@
-
 import streamlit as st
 from datetime import datetime
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from .calculations import (
+# ✅ Correct imports without dots for Streamlit Cloud
+from calculations import (
     calculate_smart_risk, calculate_ldl_effect, validate_drug_classes,
     calculate_ldl_reduction, generate_recommendations
 )
-from .constants import LDL_THERAPIES
-from .pdf_generator import create_pdf_report
-from .utils import load_logo
+from constants import LDL_THERAPIES
+from pdf_generator import create_pdf_report
+from utils import load_logo
 
+# ======================
+# Streamlit Page Config
+# ======================
 st.set_page_config(page_title="PRIME CVD Risk Calculator", layout="wide", page_icon="❤️")
 
+# ======================
+# HEADER
+# ======================
 col1, col2 = st.columns([4, 1])
 with col1:
-    st.markdown("""<div style='background:linear-gradient(135deg,#3b82f6,#2563eb);padding:1rem;border-radius:10px;'>
+    st.markdown("""
+    <div style='background:linear-gradient(135deg,#3b82f6,#2563eb);padding:1rem;border-radius:10px;'>
         <h1 style='color:white;margin:0;'>PRIME CVD Risk Calculator</h1>
         <p style='color:#e0f2fe;margin:0;'>Secondary Prevention After Myocardial Infarction</p>
-    </div>""", unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 with col2:
     load_logo()
 
+# ======================
+# SIDEBAR: PATIENT INPUTS
+# ======================
 st.sidebar.title("Patient Demographics")
 age = st.sidebar.number_input("Age (years)", min_value=30, max_value=100, value=65)
 sex = st.sidebar.radio("Sex", ["Male", "Female"], horizontal=True)
@@ -47,6 +58,9 @@ crp = st.sidebar.number_input("hs-CRP (mg/L)", 0.1, 20.0, 2.0, 0.1)
 if ldl < hdl:
     st.sidebar.error("LDL-C cannot be lower than HDL-C!")
 
+# ======================
+# RISK CALCULATION
+# ======================
 baseline_risk = calculate_smart_risk(age, sex, sbp, total_chol, hdl, smoker, diabetes, egfr, crp, vasc_count)
 if baseline_risk:
     st.success(f"Baseline 10-Year Risk: {baseline_risk}%")
